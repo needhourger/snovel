@@ -3,15 +3,16 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-28 10:54:00
+ * @LastEditTime: 2021-04-28 11:30:03
 -->
 # Snoval
+
+![GitHub](https://img.shields.io/github/license/needhourger/snovel)
 
 Shell novel 一个可以在命令行看小说的小工具
 
 使用纯python语言编写
 
-![]()
 
 ## Table of Contents
 
@@ -51,6 +52,7 @@ pip install -r reqirements.txt
 - [ ] 实现记录阅读进度
 - [ ] 双向翻页
 - [ ] 优化单页显示
+- [ ] 优化字符检测
 
 ### v0.1.0 (2021/4/28)
 
@@ -58,4 +60,6 @@ pip install -r reqirements.txt
 - 基本的图书展示,翻页功能
 
 ## License
+
+![GitHub](https://img.shields.io/github/license/needhourger/snovel)
 

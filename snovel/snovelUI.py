@@ -3,7 +3,7 @@ Description:
 Author: cc
 Date: 2021-04-19 16:09:33
 LastEditors: cc
-LastEditTime: 2021-04-28 10:30:09
+LastEditTime: 2021-04-28 11:13:17
 '''
 import os
 from prompt_toolkit.application.application import Application
@@ -13,9 +13,9 @@ from prompt_toolkit.widgets.base import Frame, TextArea
 from prompt_toolkit.layout.containers import HSplit, VSplit
 from prompt_toolkit.layout.dimension import D, Dimension
 
-import keybindings
-from config import Config
-from book import Book
+from snovel import keybindings
+from snovel.config import Config
+from snovel.book import Book
 
 
 class RadioBookList(RadioList):
