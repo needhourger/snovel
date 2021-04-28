@@ -3,7 +3,7 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-28 11:30:03
+ * @LastEditTime: 2021-04-28 11:32:16
 -->
 # Snoval
 
@@ -41,10 +41,11 @@ pip install -r reqirements.txt
    python snoval.py
    ```
 2. 使用tab切换焦点,使用方向键选择图书,章节
+3. 使用回车或者空格选定特定的书籍章节
    
-3. 使用Ctrl+x载入指定图书章节
+4. 使用Ctrl+x载入指定图书章节
    
-4. 使用ctrl+c退出程序
+5. 使用ctrl+c退出程序
 
 ## Change Log
 
