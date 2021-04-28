@@ -3,11 +3,13 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-28 11:33:22
+ * @LastEditTime: 2021-04-28 11:40:58
 -->
 # Snoval
 
 ![GitHub](https://img.shields.io/github/license/needhourger/snovel)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/needhourger/snovel?include_prereleases)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/needhourger/snovel)
 
 Shell novel 一个可以在命令行看小说的小工具
 
