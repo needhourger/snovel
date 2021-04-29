@@ -3,9 +3,8 @@ Description:
 Author: cc
 Date: 2021-04-19 16:09:33
 LastEditors: cc
-LastEditTime: 2021-04-29 17:16:43
+LastEditTime: 2021-04-29 18:27:39
 '''
-import os
 from snovel.database import DataBase
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.layout.layout import Layout

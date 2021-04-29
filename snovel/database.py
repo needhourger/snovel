@@ -3,7 +3,7 @@ Description:
 Author: cc
 Date: 2021-04-29 14:28:29
 LastEditors: cc
-LastEditTime: 2021-04-29 18:09:01
+LastEditTime: 2021-04-29 18:34:49
 '''
 from sqlalchemy import Column, String, Integer, create_engine
 from sqlalchemy.orm import sessionmaker
@@ -74,6 +74,9 @@ class DataBase:
             return
 
         p = os.path.abspath(path)
+        tbook = self.session.query(T_Book.path == p).first()
+        if tbook:
+            return
         tbook = T_Book()
         tbook.name = os.path.split(path)[1].replace(".txt", "")
         tbook.path = p
