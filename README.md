@@ -3,7 +3,7 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-29 18:10:58
+ * @LastEditTime: 2021-04-29 18:21:42
 -->
 # Snoval
 
@@ -40,19 +40,55 @@ pip install -r reqirements.txt
 ```
 
 ## Usage
-1. 程序默认启动会以当前目录为启动路径,并扫描当前目录下的txt文件,载入书架
-   ```
-   python snoval.py
-   ```
-2. 使用tab切换焦点,使用方向键选择图书,章节
+1. 基本使用方法:
+```
+usage: snovel.py [-h] [-a ADD [ADD ...]] [-l] [-d DELETE [DELETE ...]]
 
-3. 使用回车或者空格选定特定的书籍章节
+A python based shell text novel reader
+
+optional arguments:
+-h, --help            show this help message and exit
+-a ADD [ADD ...], --add ADD [ADD ...] 
+                      add book to shelf;eg. --add ./test1.txt
+-l, --list            list books
+-d DELETE [DELETE ...], --delete DELETE [DELETE ...]
+                      delete book by id;eg. --delete 1 2 3
+```
+
+2. 浏览书架书籍
+```
+$ python snovel.py -l
+[id]: 1  [path]: D:\snovel\test.txt
+[id]: 2  [path]: D:\snovel\test1.txt
+[id]: 3  [path]: D:\snovel\test3.txt
+[id]: 4  [path]: D:\snovel\test4.txt
+```
+1. 添加书籍
+```
+$ python snovel.py -a ./
+[add book]: D:\snovel\test.txt]
+[add book]: D:\snovel\test1.txt]
+[add book]: D:\snovel\test3.txt]
+[add book]: D:\snovel\test4.txt]
+```
+
+1. 删除书籍
+```
+$ python snovel.py -d 1 2 3 4 5
+```
+1. 阅读书籍
+```
+$ python snovel.py
+```
+1. 使用tab切换焦点,使用方向键选择图书,章节
+
+2. 使用回车或者空格选定特定的书籍章节
    
-4. 使用Ctrl+x载入指定图书章节
+3. 使用Ctrl+x载入指定图书章节
    
-5. 使用ctrl+right向后翻页,ctrl+left向前翻页
+4. 使用ctrl+right向后翻页,ctrl+left向前翻页
    
-6. 使用ctrl+c退出程序
+5. 使用ctrl+c退出程序
 
 ## Change Log
 
