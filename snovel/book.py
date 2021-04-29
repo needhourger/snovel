@@ -1,102 +1,47 @@
 '''
-Description: 
+Description:
 Author: cc
-Date: 2021-04-19 14:41:42
+Date: 2021-04-28 15:29:40
 LastEditors: cc
-LastEditTime: 2021-04-28 10:23:34
+LastEditTime: 2021-04-29 11:42:24
 '''
+
+import os
 import re
 import chardet
 
 
-class Chapter:
-
-    CHAPTER_SIGN = ["卷", "章", "节", "篇"]
-
-    def __init__(self) -> None:
-        pass
-
-    def __init__(self, data: str) -> None:
-        temp = data.splitlines()
-        lines = []
-        for i in temp:
-            if i.strip() == "":
-                continue
-            lines.append(i)
-
-        self.content = []
-        if not lines:
-            return
-
-        if len(lines) == 1:
-            self.title = lines[0].strip()
-            self.content = lines
-        else:
-            if self._has_chapter_sign(lines[0]):
-                self.title = lines[0].strip()
-                self.content = lines[1:]
-            else:
-                self.title = lines[0].strip()
-                self.content = lines
-
-        self._p = 0
-
-    def get_content(self, rows: int, columns: int):
-        if self._p >= len(self.content):
-            return None
-
-        ret = ""
-        line_rows = len(self.content[self._p])/columns + \
-            (0 if len(self.content[self._p]) % columns == 0 else 1)
-        while (rows-line_rows > 0):
-            ret += self.content[self._p]
-            self._p += 1
-            rows = rows-line_rows
-            if (self._p < len(self.content)):
-                line_rows = len(self.content[self._p])/columns + \
-                    (0 if len(self.content[self._p]) % columns == 0 else 1)
-            else:
-                break
-
-        return ret
-
-    @classmethod
-    def _has_chapter_sign(cls, data):
-        for i in cls.CHAPTER_SIGN:
-            if i in data:
-                return True
-        return False
-
-
 class Book:
 
-    def __init__(self) -> None:
-        self.chapters = []
-        self.table_contents = []
-
     def __init__(self, path: str) -> None:
-        if not path:
-            self.__init__()
+        self.name = None
+        self.author = None
+        self.chapters = []
+        self.p_chapter = 0
+        if not os.path.exists(path):
             return
 
-        encoding = self.get_encoding(path)
+        encoding = get_encoding(path)
         with open(path, "r", encoding=encoding) as f:
             data = f.read()
             f.close()
 
-            chapters = re.split(r'\n[\n]+', data)
-            if not chapters:
-                self.chapters = None
+            cs = re.split(r"\n[\n]+", data)
+            if not cs:
+                return
 
-            self._get_info(chapters[0])
+            self.__get_book_info(cs[0])
 
-            self.chapters = []
-            for c in chapters:
+            for c in cs:
                 self.chapters.append(Chapter(c))
 
-            self.table_contents = [i.title for i in self.chapters]
+            self.p_chapter = 0
 
-    def _get_info(self, data: str):
+    @property
+    def catalog(self):
+        return [(i, v.title) for i, v in enumerate(self.chapters)]
+
+    def __get_book_info(self, data: str):
         self.name = None
         self.author = None
 
@@ -108,27 +53,141 @@ class Book:
                 self.author = v.strip()
                 return
 
-    def get_content(self, index: int, rows: int, columns: int):
-        if index < 0 or index >= len(self.chapters):
+    @property
+    def chapter_title(self):
+        return self.chapters[self.p_chapter].title
+
+    def select_chapter(self, index: int):
+        self.p_chapter = index
+        self.chapters[self.p_chapter].p_init()
+
+    def next_page(self, rows: int, columns: int):
+        if self.p_chapter < 0 or self.p_chapter >= len(self.chapters):
             return None
 
-        return self.chapters[index].get_content(rows, columns)
+        data = self.chapters[self.p_chapter].next_content(rows, columns)
+        if data is None:
+            if self.p_chapter+1 < len(self.chapters):
+                self.p_chapter += 1
+                self.chapters[self.p_chapter].p_init()
+                return self.next_page(rows, columns)
+            else:
+                return None
+        return data
 
-    def get_table_content_tuple_list(self):
-        return [(i, v) for i, v in enumerate(self.table_contents)]
+    def previous_page(self, rows: int, columns: int):
+        if self.p_chapter < 0 or self.p_chapter >= len(self.chapters):
+            return None
+
+        data = self.chapters[self.p_chapter].previous_content(rows, columns)
+        if not data:
+            if self.p_chapter-1 >= 0:
+                self.p_chapter -= 1
+                self.chapters[self.p_chapter].p_init(last=True)
+                return self.previous_page(rows, columns)
+            else:
+                return None
+        return data
+
+
+class Chapter:
+
+    CHAPTER_SIGN = ["序", "卷", "章", "节", "篇", "后记"]
+
+    def __init__(self, data: str) -> None:
+        self.content = ""
+        self.title = "(None)"
+        self.p_start = 0
+        self.p_end = 0
+
+        ls = data.splitlines(keepends=True)
+        lines = []
+        for l in ls:
+            if l.strip() == "":
+                continue
+            lines.append(l)
+
+        if lines == []:
+            return
+
+        if len(lines) == 1:
+            self.title = lines[0].strip()
+            self.content = "".join(lines)
+        else:
+            if self.__has_chapter_sign(lines[0]):
+                self.title = lines[0].strip()
+                self.content = "".join(lines[1:])
+            else:
+                self.content = "".join(lines)
+
+    def next_content(self, rows: int, columns: int):
+        self.p_start = self.p_end
+        if self.p_start >= len(self.content):
+            return None
+
+        p = self.p_start
+        while rows > 0:
+            if self.p_end+columns <= len(self.content):
+                self.p_end += columns
+                row = self.content[p:self.p_end]
+                if "\n" in row:
+                    self.p_end = self.p_end-columns+row.index("\n")+1
+                rows -= 1
+                p = self.p_end
+            else:
+                self.p_end = len(self.content)
+                break
+        return self.content[self.p_start:self.p_end]
+
+    def previous_content(self, rows: int, columns: int):
+        self.p_end = self.p_start
+        if self.p_start <= 0:
+            return None
+
+        p = self.p_end
+        while rows > 0:
+            if self.p_start-columns >= 0:
+                self.p_start = self.p_start-columns
+                row = self.content[self.p_start:p]
+                if "\n" in row:
+                    self.p_start = self.p_start+row.index("\n")+1
+                rows -= 1
+                p = self.p_start
+            else:
+                self.p_start = 0
+                break
+        return self.content[self.p_start:self.p_end]
+
+    def p_init(self, last=False):
+        if last:
+            self.p_start = len(self.content)
+            self.p_end = len(self.content)
+        else:
+            self.p_start = 0
+            self.p_end = 0
 
     @classmethod
-    def get_encoding(cls, file):
-        if not file:
-            return None
-        with open(file, "rb") as f:
-            ret = chardet.detect(f.read(1024))["encoding"]
-            f.close()
-            if ret == "GB2312":
-                ret = "GBK"
-            return ret
+    def __has_chapter_sign(cls, data: str):
+        for i in cls.CHAPTER_SIGN:
+            if i in data:
+                return True
+        return False
+
+
+def get_encoding(file):
+    with open(file, "rb") as f:
+        ret = chardet.detect(f.read(1024))["encoding"]
+        f.close()
+        if ret == "GB2312":
+            ret = "GBK"
+        return ret
 
 
 if __name__ == "__main__":
     b = Book("./test1.txt")
-    print(b.get_content(0, 0, 800))
+    # b.select_chapter(20)
+    while True:
+        input()
+        d = b.next_page(30, 116)
+        print(b.p_chapter, len(d))
+        print(d)

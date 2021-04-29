@@ -3,7 +3,7 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-28 11:33:22
+ * @LastEditTime: 2021-04-29 11:49:03
 -->
 # Snoval
 
@@ -23,6 +23,7 @@ Shell novel 一个可以在命令行看小说的小工具
   - [Usage](#usage)
   - [Change Log](#change-log)
     - [Project Planning](#project-planning)
+    - [v0.1.1 (2021/4/29)](#v011-2021429)
     - [v0.1.0 (2021/4/28)](#v010-2021428)
   - [License](#license)
 
@@ -46,7 +47,7 @@ pip install -r reqirements.txt
    
 4. 使用Ctrl+x载入指定图书章节
    
-5. 使用ctrl+right翻页
+5. 使用ctrl+right向后翻页,ctrl+left向前翻页
    
 6. 使用ctrl+c退出程序
 
@@ -54,9 +55,14 @@ pip install -r reqirements.txt
 
 ### Project Planning
 - [ ] 实现记录阅读进度
-- [ ] 双向翻页
-- [ ] 优化单页显示
+- [x] 双向翻页
+- [x] 优化单页显示
 - [ ] 优化字符检测
+
+### v0.1.1 (2021/4/29)
+
+- 实现双向翻页
+- 修正单页数据显示错乱
 
 ### v0.1.0 (2021/4/28)
 

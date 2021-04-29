@@ -3,7 +3,7 @@ Description:
 Author: cc
 Date: 2021-04-19 16:09:33
 LastEditors: cc
-LastEditTime: 2021-04-28 11:13:17
+LastEditTime: 2021-04-29 11:42:35
 '''
 import os
 from prompt_toolkit.application.application import Application
@@ -41,7 +41,7 @@ class SnovalUI:
         if not os.path.isdir(path):
             path = config.DEFAULT_PATH
         self.search_dir_books(path)
-        self.load_book(self.radio_book_list.current_value)
+        self.load_book()
 
     def createUI(self):
         self.radio_book_list = RadioBookList(values=[(None, "(None)")])
@@ -54,6 +54,8 @@ class SnovalUI:
             read_only=True,
             line_numbers=False
         )
+        self.text_frame = Frame(body=self.text_area,
+                                key_bindings=keybindings.text_area(self))
 
         root_conationer = VSplit([
             HSplit([
@@ -71,8 +73,7 @@ class SnovalUI:
                 )
             ], width=D.exact(self.RADIO_WIDTH)),
             HSplit([
-                Frame(body=self.text_area,
-                      key_bindings=keybindings.text_area(self))
+                self.text_frame
             ])
         ])
 
@@ -85,9 +86,11 @@ class SnovalUI:
             mouse_support=True
         )
 
-    def load_book(self, value):
-        self.book = Book(value)
-        self.radio_chapter_list.values = self.book.get_table_content_tuple_list()
+    def load_book(self):
+        self.book = Book(self.radio_book_list.current_value)
+        self.radio_chapter_list.values = self.book.catalog
+        self.radio_chapter_list.current_value = self.book.p_chapter
+        self.next_page()
 
     def search_dir_books(self, path):
         res = []
@@ -99,33 +102,34 @@ class SnovalUI:
             self.radio_book_list.values = res
             self.radio_book_list.current_value = res[0][0]
 
-    def select_book(self):
-        self.load_book(self.radio_book_list.current_value)
-
     def select_chapter(self):
-        columns = self.application.output.get_size().columns-self.RADIO_WIDTH-2
-        rows = self.application.output.get_size().rows-2
-        data = self.book.get_content(
-            self.radio_chapter_list.current_value, rows, columns)
-        if data is None:
-            return
-        self.text_area.text = data
+        self.book.select_chapter(self.radio_chapter_list.current_value)
+        self.next_page()
 
     def next_page(self):
-        columns = self.application.output.get_size().columns-self.RADIO_WIDTH-2
+        columns = (self.application.output.get_size().columns -
+                   self.RADIO_WIDTH-2)//2
         rows = self.application.output.get_size().rows-2
-        data = self.book.get_content(
-            self.radio_chapter_list.current_value, rows, columns)
+        data = self.book.next_page(rows, columns)
 
         if data is None:
-            self.radio_chapter_list.current_value += 1
-            self.select_chapter()
             return
 
         self.text_area.text = data
+        # self.text_frame.title = self.book.chapter_title
+        self.radio_chapter_list.current_value = self.book.p_chapter
 
     def previous_page(self):
-        self.text_area.buffer.cursor_up()
+        columns = self.application.output.get_size().columns-self.RADIO_WIDTH-2
+        rows = self.application.output.get_size().rows-2
+        data = self.book.previous_page(rows, columns)
+
+        if data is None:
+            return
+
+        self.text_area.text = data
+        # self.text_frame.title = self.book.chapter_title
+        self.radio_chapter_list.current_value = self.book.p_chapter
 
     def run(self):
         self.application.run()
