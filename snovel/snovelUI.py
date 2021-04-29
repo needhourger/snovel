@@ -3,9 +3,10 @@ Description:
 Author: cc
 Date: 2021-04-19 16:09:33
 LastEditors: cc
-LastEditTime: 2021-04-29 11:42:35
+LastEditTime: 2021-04-29 17:16:43
 '''
 import os
+from snovel.database import DataBase
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.widgets import RadioList
@@ -35,12 +36,11 @@ class SnovalUI:
     def __init__(self) -> None:
         pass
 
-    def __init__(self, path: str, config: Config) -> None:
+    def __init__(self, db: DataBase, config: Config) -> None:
         self.createUI()
+        self.db = db
 
-        if not os.path.isdir(path):
-            path = config.DEFAULT_PATH
-        self.search_dir_books(path)
+        self.get_db_books_values()
         self.load_book()
 
     def createUI(self):
@@ -86,21 +86,20 @@ class SnovalUI:
             mouse_support=True
         )
 
+    def get_db_books_values(self):
+        self.radio_book_list.values = self.db.get_books_values()
+        self.radio_book_list.current_value = self.radio_book_list.values[0][0]
+
     def load_book(self):
-        self.book = Book(self.radio_book_list.current_value)
+        self.book = None
+        book = self.db.get_book(self.radio_book_list.current_value)
+        if not book:
+            self.text_area.text = "目标id书籍不存在数据库中"
+            return
+        self.book = Book(book)
         self.radio_chapter_list.values = self.book.catalog
         self.radio_chapter_list.current_value = self.book.p_chapter
         self.next_page()
-
-    def search_dir_books(self, path):
-        res = []
-        for root, _, files in os.walk(path):
-            for f in files:
-                if f.endswith(".txt"):
-                    res.append((os.path.join(root, f), f))
-        if res:
-            self.radio_book_list.values = res
-            self.radio_book_list.current_value = res[0][0]
 
     def select_chapter(self):
         self.book.select_chapter(self.radio_chapter_list.current_value)
@@ -130,6 +129,10 @@ class SnovalUI:
         self.text_area.text = data
         # self.text_frame.title = self.book.chapter_title
         self.radio_chapter_list.current_value = self.book.p_chapter
+
+    def save(self):
+        if self.book:
+            self.db.save_book(self.book.export_tbook())
 
     def run(self):
         self.application.run()
