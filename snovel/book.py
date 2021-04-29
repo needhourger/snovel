@@ -3,8 +3,9 @@ Description:
 Author: cc
 Date: 2021-04-28 15:29:40
 LastEditors: cc
-LastEditTime: 2021-04-29 11:42:24
+LastEditTime: 2021-04-29 18:06:08
 '''
+from snovel.database import T_Book
 
 import os
 import re
@@ -13,16 +14,26 @@ import chardet
 
 class Book:
 
-    def __init__(self, path: str) -> None:
-        self.name = None
+    def __init__(self, tbook: T_Book) -> None:
+        self.id = None
+        self.name = "(None)"
         self.author = None
         self.chapters = []
         self.p_chapter = 0
-        if not os.path.exists(path):
+        self.path = None
+        if not tbook:
             return
 
-        encoding = get_encoding(path)
-        with open(path, "r", encoding=encoding) as f:
+        self.id = tbook.id
+        self.name = tbook.name
+        self.author = tbook.author
+        self.path = tbook.path
+
+        if not os.path.exists(tbook.path):
+            return
+
+        encoding = get_encoding(tbook.path)
+        with open(tbook.path, "r", encoding=encoding) as f:
             data = f.read()
             f.close()
 
@@ -35,21 +46,20 @@ class Book:
             for c in cs:
                 self.chapters.append(Chapter(c))
 
-            self.p_chapter = 0
+            self.p_chapter = tbook.p_chapter
+            self.chapters[self.p_chapter].p_start = tbook.p_start
+            self.chapters[self.p_chapter].p_end = tbook.p_end
 
     @property
     def catalog(self):
         return [(i, v.title) for i, v in enumerate(self.chapters)]
 
     def __get_book_info(self, data: str):
-        self.name = None
         self.author = None
 
         lines = data.splitlines()
         for i, v in enumerate(lines):
             if "作者" in v:
-                if i > 0:
-                    self.name = lines[i-1].strip()
                 self.author = v.strip()
                 return
 
@@ -88,6 +98,19 @@ class Book:
             else:
                 return None
         return data
+
+    def export_tbook(self):
+        ret = {
+            "id": self.id,
+            "name": self.name,
+            "author": self.author,
+            "p_chapter": self.p_chapter,
+            "path": self.path,
+            "p_start": self.chapters[self.p_chapter].p_start,
+            "p_end": self.chapters[self.p_chapter].p_end
+        }
+
+        return ret
 
 
 class Chapter:

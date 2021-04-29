@@ -3,7 +3,7 @@
  * @Author: cc
  * @Date: 2021-04-28 10:30:20
  * @LastEditors: cc
- * @LastEditTime: 2021-04-29 11:49:03
+ * @LastEditTime: 2021-04-29 18:10:58
 -->
 # Snoval
 
@@ -25,6 +25,7 @@ Shell novel 一个可以在命令行看小说的小工具
   - [Usage](#usage)
   - [Change Log](#change-log)
     - [Project Planning](#project-planning)
+    - [v0.1.2 (2021/4/29)](#v012-2021429)
     - [v0.1.1 (2021/4/29)](#v011-2021429)
     - [v0.1.0 (2021/4/28)](#v010-2021428)
   - [License](#license)
@@ -56,10 +57,15 @@ pip install -r reqirements.txt
 ## Change Log
 
 ### Project Planning
-- [ ] 实现记录阅读进度
+- [x] 实现记录阅读进度
 - [x] 双向翻页
 - [x] 优化单页显示
-- [ ] 优化字符检测
+- [ ] 自动打开上次阅读书籍
+
+### v0.1.2 (2021/4/29)
+
+- 实现阅读进度自动保存
+- 数据存储使用sqlite数据库
 
 ### v0.1.1 (2021/4/29)
 

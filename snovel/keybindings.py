@@ -3,7 +3,7 @@ Description:
 Author: cc
 Date: 2021-04-20 17:04:40
 LastEditors: cc
-LastEditTime: 2021-04-28 15:10:15
+LastEditTime: 2021-04-29 16:25:38
 '''
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.focus import focus_next
@@ -15,6 +15,7 @@ def root(cls):
 
     @kb.add("c-c")
     def _(event):
+        cls.save()
         event.app.exit()
 
     @kb.add("c-right")
@@ -33,6 +34,7 @@ def book_list(cls):
 
     @kb.add("c-x")
     def _(event):
+        cls.save()
         cls.load_book()
 
     return kb
